@@ -1,5 +1,6 @@
 import java.net.*;
 import java.io.*;
+import java.util.Arrays;
 
 public class Server extends Thread {
     protected Socket socket;
@@ -18,7 +19,7 @@ public class Server extends Thread {
                 }
             }
             catch (IOException e){
-                System.err.println("Couldn't connec to client.");
+                System.err.println("Couldn't connect to client.");
                 System.exit(1);
             }
         }
@@ -53,10 +54,12 @@ public class Server extends Thread {
 
             while ((il = in.readLine()) != null){
                 System.out.println ("Server(this): " + il);
-                out.println(il);
 
                 if (il.equals("disconnect"))
                     break;
+
+                String output = parseInput(il);
+                out.println(output);
             }
 
             out.close();
@@ -67,5 +70,15 @@ public class Server extends Thread {
             System.err.println("Problem with Communication Server");
             System.exit(1);
         }
+    }
+    protected String parseInput(String input){
+        String[] args = input.split(" ");
+        String command = args[0];
+        args = Arrays.copyOfRange(args, 1, args.length);
+        if(command.equals("test")){
+            return "AREE YOU TESTING? args: " + String.join(",",args);
+        }
+
+        return input;
     }
 }
