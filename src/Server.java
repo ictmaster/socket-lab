@@ -1,10 +1,13 @@
 import java.net.*;
 import java.io.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.Arrays;
 
 public class Server extends Thread {
     protected Socket socket;
-
+    private static int connected_clients = 0;
     public static void main(String[] args) throws IOException {
         ServerSocket serverSocket = null;
         int port = 10008;
@@ -44,7 +47,7 @@ public class Server extends Thread {
     }
 
     public void run() {
-        System.out.println ("Creating thread for client");
+        System.out.println ("Creating thread for client "+(++connected_clients)+"...");
 
         try {
             PrintWriter out = new PrintWriter(socket.getOutputStream(),true);
@@ -52,10 +55,12 @@ public class Server extends Thread {
 
             String il;
 
+            //Main loop
             while ((il = in.readLine()) != null){
                 System.out.println ("Server(this): " + il);
 
-                if (il.equals("disconnect"))
+                //Break the loop and close the socket if client disconnects...
+                if (il.startsWith("disconnect"))
                     break;
 
                 String output = parseInput(il);
@@ -71,12 +76,25 @@ public class Server extends Thread {
             System.exit(1);
         }
     }
+
+    //TODO: write this
+    protected String getEmailsByName(String[] args){
+        if (args.length != 2){
+            return "Error! expected exactly, "+args.length+" was given...\n":
+        }
+        return "not yet implemented";
+    }
+
+    //Function for parsing userinput
     protected String parseInput(String input){
         String[] args = input.split(" ");
         String command = args[0];
         args = Arrays.copyOfRange(args, 1, args.length);
         if(command.equals("test")){
             return "AREE YOU TESTING? args: " + String.join(",",args);
+        }
+        if (command.equals("getmail")){
+            return getEmailsByName(args);
         }
 
         return input;
