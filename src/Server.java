@@ -77,13 +77,7 @@ public class Server extends Thread {
         }
     }
 
-    //TODO: write this
-    protected String getEmailsByName(String[] args){
-        if (args.length != 2){
-            return "Error! expected exactly, "+args.length+" was given...\n":
-        }
-        return "not yet implemented";
-    }
+
 
     //Function for parsing userinput
     protected String parseInput(String input){
@@ -94,7 +88,13 @@ public class Server extends Thread {
             return "AREE YOU TESTING? args: " + String.join(",",args);
         }
         if (command.equals("getmail")){
-            return getEmailsByName(args);
+            try {
+                return DbHelper.getEmailsByName(args);
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
 
         return input;
