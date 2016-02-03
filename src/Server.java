@@ -60,8 +60,9 @@ public class Server extends Thread {
                 System.out.println ("Server(this): " + il);
 
                 //Break the loop and close the socket if client disconnects...
-                if (il.startsWith("disconnect"))
+                if (il.startsWith("disconnect")){
                     break;
+                }
 
                 String output = parseInput(il);
                 out.println(output);
@@ -78,7 +79,6 @@ public class Server extends Thread {
     }
 
 
-
     //Function for parsing userinput
     protected String parseInput(String input){
         String[] args = input.split(" ");
@@ -90,10 +90,9 @@ public class Server extends Thread {
         if (command.equals("getmail")){
             try {
                 return DbHelper.getEmailsByName(args);
-            } catch (ClassNotFoundException e) {
+            } catch (SQLException | ClassNotFoundException e) {
                 e.printStackTrace();
-            } catch (SQLException e) {
-                e.printStackTrace();
+                System.out.println("getmail function failed...");
             }
         }
 

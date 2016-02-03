@@ -21,11 +21,8 @@ public class Client {
             socket = new Socket(ip, port);
             out = new PrintWriter(socket.getOutputStream(), true);
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        } catch (UnknownHostException e) {
-            System.err.println("Couldn't find host: " + ip);
-            System.exit(1);
         } catch (IOException e) {
-            System.err.println("Couldn't get I/O for the connection to: " + ip);
+            System.err.println("Couldn't find host: " + ip);
             System.exit(1);
         }
 
