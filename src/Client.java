@@ -33,12 +33,12 @@ public class Client {
         while ((userInput = stdIn.readLine()) != null)
         {
             out.println(userInput);
-
+            String reply = in.readLine();
             // end loop
-            if (userInput.equals("disconnect"))
+            if (userInput.equals("disconnect") || reply.equals("server_shutting_down"))
                 break;
-            
-            System.out.println(">>>Server responds: " + in.readLine());
+
+            System.out.println(">>>Server responds: " + reply);
         }
 
         out.close();

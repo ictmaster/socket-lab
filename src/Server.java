@@ -1,13 +1,19 @@
 import java.net.*;
 import java.io.*;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.UUID;
 
 public class Server extends Thread {
     protected Socket socket;
-    private static int connected_clients = 0;
+    private static ArrayList<Server> serverInstances;
+    UUID id;
     public static void main(String[] args) throws IOException {
         ServerSocket serverSocket = null;
+        //For keeping track of running threads
+        serverInstances = new ArrayList<>();
+
         int port = 10008;
 
         try {
@@ -16,7 +22,7 @@ public class Server extends Thread {
             try {
                 while (true){
                     System.out.println ("Waiting for client connection...");
-                    new Server (serverSocket.accept());
+                    serverInstances.add(new Server (serverSocket.accept()));
                 }
             }
             catch (IOException e){
@@ -40,12 +46,14 @@ public class Server extends Thread {
     }
 
     private Server (Socket client) {
-        socket = client;
-        start();
+        this.id = UUID.randomUUID();
+        this.socket = client;
+        this.start();
+
     }
 
     public void run() {
-        System.out.println ("Creating thread for client "+(++connected_clients)+"...");
+        System.out.println ("Creating thread for client "+(this.id)+"...");
 
         try {
             PrintWriter out = new PrintWriter(socket.getOutputStream(),true);
@@ -59,6 +67,8 @@ public class Server extends Thread {
 
                 //Break the loop and close the socket if client disconnects...
                 if (il.startsWith("disconnect")){
+                    System.out.println("Server(this): Disconnecting client "+ this.id );
+                    serverInstances.remove(this);
                     break;
                 }
 
