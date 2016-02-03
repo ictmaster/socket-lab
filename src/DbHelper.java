@@ -54,7 +54,7 @@ public class DbHelper{
         c.close();
     }
 
-    public static String getEmailsByName(String[] args) throws ClassNotFoundException, SQLException {
+    public static String getEmail(String[] args) {
         ArrayList<String> argList = new ArrayList<>(Arrays.asList(args));
         String sql;
         if (argList.contains("--byid") && argList.size() == 3){
@@ -67,19 +67,100 @@ public class DbHelper{
         }
 
         Connection c;
-        Class.forName(c_name);
-        c = DriverManager.getConnection(db_con);
+        try {
+            Class.forName(c_name);
 
-        PreparedStatement ps = c.prepareStatement(sql);
-        ps.setString(1, argList.get(0));
-        ps.setString(2, argList.get(1));
+            c = DriverManager.getConnection(db_con);
 
-        ResultSet rs = ps.executeQuery();
-        while(rs.next()){
-            return rs.getString("EMAIL");
+            PreparedStatement ps = c.prepareStatement(sql);
+            ps.setString(1, argList.get(0));
+            ps.setString(2, argList.get(1));
+
+            ResultSet rs = ps.executeQuery();
+            while(rs.next()){
+                return rs.getString("EMAIL");
+            }
+            c.close();
+        }catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-        c.close();
-
         return "No entry found...(Remember to use syntax 'getmail fname lname' or 'getmail --byid depnum lname')";
+    }
+
+    public static String getNumber(String[] args){
+        ArrayList<String> argList = new ArrayList<>(Arrays.asList(args));
+        String sql;
+        if (argList.contains("--byid") && argList.size() == 3){
+            argList.remove("--byid");
+            sql = "SELECT * FROM data WHERE DEPNUM = ? AND LNAME = ?";
+        }else if (argList.size() == 2){
+            sql = "SELECT * FROM data WHERE FNAME = ? AND LNAME = ?";
+        }else{
+            return "Invalid arguments...";
+        }
+
+        Connection c;
+        try {
+            Class.forName(c_name);
+
+            c = DriverManager.getConnection(db_con);
+
+            PreparedStatement ps = c.prepareStatement(sql);
+            ps.setString(1, argList.get(0));
+            ps.setString(2, argList.get(1));
+
+            ResultSet rs = ps.executeQuery();
+            while(rs.next()){
+                return rs.getString("PNUMBER");
+            }
+            c.close();
+
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+            return "getnumber function failed...";
+        }
+        return "No entry found...(Remember to use syntax 'getnumber fname lname' or 'getnumber --byid depnum lname')";
+
+    }
+
+    public static String getList(String[] args){
+        ArrayList<String> argList = new ArrayList<>(Arrays.asList(args));
+        String sql;
+        if (argList.size() == 1){
+            sql = "SELECT * FROM data WHERE DEPNUM = ?";
+        }else{
+            return "Invalid arguments...";
+        }
+
+        String resultString = "";
+
+        Connection c;
+        try {
+            Class.forName(c_name);
+
+            c = DriverManager.getConnection(db_con);
+
+            PreparedStatement ps = c.prepareStatement(sql);
+            ps.setString(1, argList.get(0));
+
+            ResultSet rs = ps.executeQuery();
+            while(rs.next()){
+                resultString += rs.getString("FNAME") + " " +rs.getString("LNAME") + ", ";
+            }
+            c.close();
+
+            if (!resultString.equals("")){
+                //Delete last comma
+                resultString = resultString.substring(0,resultString.length()-2);
+                return resultString;
+            }
+
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+            return "getnumber function failed...";
+        }
+        return "No entry found...(Remember to use syntax 'listdep depnum')";
     }
 }

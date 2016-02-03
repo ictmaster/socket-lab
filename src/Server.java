@@ -1,7 +1,5 @@
 import java.net.*;
 import java.io.*;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Arrays;
 
@@ -84,16 +82,16 @@ public class Server extends Thread {
         String[] args = input.split(" ");
         String command = args[0];
         args = Arrays.copyOfRange(args, 1, args.length);
-        if(command.equals("test")){
-            return "AREE YOU TESTING? args: " + String.join(",",args);
-        }
-        if (command.equals("getmail")){
-            try {
-                return DbHelper.getEmailsByName(args);
-            } catch (SQLException | ClassNotFoundException e) {
-                e.printStackTrace();
-                System.out.println("getmail function failed...");
-            }
+
+        switch(command){
+            case "test":
+                return "AREE YOU TESTING? args: " + String.join(",",args);
+            case "getmail":
+                return DbHelper.getEmail(args);
+            case "getnumber":
+                return DbHelper.getNumber(args);
+            case "listdep":
+                return DbHelper.getList(args);
         }
 
         return input;
